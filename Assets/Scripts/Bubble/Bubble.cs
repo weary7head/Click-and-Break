@@ -56,15 +56,7 @@ public class Bubble : MonoBehaviour
     {
         _transform.position = Vector3.MoveTowards(_transform.position, _destination, _speed * Time.deltaTime);
     }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (TryGetComponent(out BubblesDestroyer bubblesDestroyer))
-        {
-            Destroy(gameObject);
-        }
-    }
-
+    
     private void OnDisable()
     {
         _bubblesSpawner.SpeedChanged -= ChangeSpeed;
@@ -72,7 +64,7 @@ public class Bubble : MonoBehaviour
 
     private void OnDestroy()
     {
-        Instantiate(_particleObject);
+        Instantiate(_particleObject, _transform.position, Quaternion.identity);
     }
 
     private void OnMouseDown()
@@ -83,5 +75,6 @@ public class Bubble : MonoBehaviour
     private void ChangeSpeed(float speed)
     {
         _speed *= speed;
+        Debug.Log(_speed);
     }
 }
