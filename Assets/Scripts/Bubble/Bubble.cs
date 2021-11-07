@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(MeshRenderer))]
@@ -13,8 +11,6 @@ public class Bubble : MonoBehaviour
     [SerializeField] private int _maximumDamage = 5;
     [SerializeField] private int _minimumPoints = 1;
     [SerializeField] private int _maximumPoints = 10;
-    [SerializeField, Range(0, 255)] private int _minimumColor = 0;
-    [SerializeField, Range(0, 255)] private int _maximumColor = 255;
     [Header("Y value of bubble's destroyer")]
     [SerializeField] private float _yDestination;
     [Header("Particle effect after the death of the bubble")]
@@ -22,6 +18,8 @@ public class Bubble : MonoBehaviour
     [Header("Reference for spawner")] 
     [SerializeField] private BubblesSpawner _bubblesSpawner;
 
+    private float _minimumColor = 0;
+    private float _maximumColor = 1;
     private Transform _transform;
     private float _speed;
     private int _damage;
@@ -62,19 +60,20 @@ public class Bubble : MonoBehaviour
         _bubblesSpawner.SpeedChanged -= ChangeSpeed;
     }
 
-    private void OnDestroy()
-    {
-        Instantiate(_particleObject, _transform.position, Quaternion.identity);
-    }
-
     private void OnMouseDown()
     {
+        CreateEffect();
         Destroy(gameObject);
     }
 
     private void ChangeSpeed(float speed)
     {
         _speed *= speed;
-        Debug.Log(_speed);
+    }
+
+    private void CreateEffect()
+    {
+        GameObject effect = Instantiate(_particleObject, _transform.position, Quaternion.identity);
+        effect.GetComponent<ExplosionEffect>().SetColor(_color);
     }
 }

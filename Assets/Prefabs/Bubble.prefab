@@ -116,7 +116,7 @@ MonoBehaviour:
   _minimumPoints: 1
   _maximumPoints: 10
   _minimumColor: 0
-  _maximumColor: 255
+  _maximumColor: 1
   _yDestination: -20
   _particleObject: {fileID: 8506861054394717130, guid: c418bbc9b1b3b134c8d194b5ddd142a4, type: 3}
   _bubblesSpawner: {fileID: 4691490840821916535, guid: 3208f7145e2baa54c9be680ef4087170, type: 3}
