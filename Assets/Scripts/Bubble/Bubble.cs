@@ -17,6 +17,8 @@ public class Bubble : MonoBehaviour
     [SerializeField] private GameObject _particleObject;
     [Header("Reference for spawner")] 
     [SerializeField] private BubblesSpawner _bubblesSpawner;
+    [Header("Reference for Player")] 
+    [SerializeField] private Player _player;
 
     private float _minimumColor = 0;
     private float _maximumColor = 1;
@@ -27,6 +29,7 @@ public class Bubble : MonoBehaviour
     private Color _color;
     private MeshRenderer _meshRenderer;
     private Vector3 _destination;
+    private bool _isKilled;
 
     private void Awake()
     {
@@ -36,6 +39,7 @@ public class Bubble : MonoBehaviour
         _points = Random.Range(_minimumPoints, _maximumPoints);
         _color = new Color(Random.Range(_minimumColor, _maximumColor), Random.Range(_minimumColor, _maximumColor), Random.Range(_minimumColor, _maximumColor));
         _meshRenderer = GetComponent<MeshRenderer>();
+        _isKilled = false;
     }
 
     private void OnEnable()
@@ -60,9 +64,19 @@ public class Bubble : MonoBehaviour
         _bubblesSpawner.SpeedChanged -= ChangeSpeed;
     }
 
+    private void OnDestroy()
+    {
+        if (_isKilled == false)
+        {
+            Attack();
+        }
+    }
+
     private void OnMouseDown()
     {
         CreateEffect();
+        _player.AddPoints(_points);
+        _isKilled = true;
         Destroy(gameObject);
     }
 
@@ -75,5 +89,10 @@ public class Bubble : MonoBehaviour
     {
         GameObject effect = Instantiate(_particleObject, _transform.position, Quaternion.identity);
         effect.GetComponent<ExplosionEffect>().SetColor(_color);
+    }
+
+    private void Attack()
+    {
+        _player.GetDamage(_damage);
     }
 }
