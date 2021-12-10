@@ -1,12 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class Menu : MonoBehaviour
 {
-    [SerializeField] private Button _continueButton;
-    [SerializeField] private Button _pauseButton;
-
     public void Continue()
     {
         Time.timeScale = 1;

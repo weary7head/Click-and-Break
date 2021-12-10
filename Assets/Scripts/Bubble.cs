@@ -1,9 +1,13 @@
+using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(MeshRenderer))]
 public class Bubble : MonoBehaviour
 {
+    public event Action<Bubble> Clicked;
+    public event Action<Bubble> Destroyed;
+
     [Header("Properties limits")]
     [SerializeField] private float _minimumSpeed = 1f;
     [SerializeField] private float _maximumSpeed = 2f;
@@ -14,11 +18,7 @@ public class Bubble : MonoBehaviour
     [Header("Y value of bubble's destroyer")]
     [SerializeField] private float _yDestination;
     [Header("Particle effect after the death of the bubble")]
-    [SerializeField] private GameObject _particleObject;
-    [Header("Reference for spawner")] 
-    [SerializeField] private BubblesSpawner _bubblesSpawner;
-    [Header("Reference for Player")] 
-    [SerializeField] private Player _player;
+    [SerializeField] private ExplosionEffect _particleObject;
 
     private float _minimumColor = 0;
     private float _maximumColor = 1;
@@ -31,6 +31,9 @@ public class Bubble : MonoBehaviour
     private Vector3 _destination;
     private bool _isKilled;
 
+    public int Points => _points;
+    public int Damage => _damage;
+
     private void Awake()
     {
         _transform = transform;
@@ -40,11 +43,6 @@ public class Bubble : MonoBehaviour
         _color = new Color(Random.Range(_minimumColor, _maximumColor), Random.Range(_minimumColor, _maximumColor), Random.Range(_minimumColor, _maximumColor));
         _meshRenderer = GetComponent<MeshRenderer>();
         _isKilled = false;
-    }
-
-    private void OnEnable()
-    {
-        _bubblesSpawner.SpeedChanged += ChangeSpeed;
     }
 
     private void Start()
@@ -58,41 +56,31 @@ public class Bubble : MonoBehaviour
     {
         _transform.position = Vector3.MoveTowards(_transform.position, _destination, _speed * Time.deltaTime);
     }
-    
-    private void OnDisable()
-    {
-        _bubblesSpawner.SpeedChanged -= ChangeSpeed;
-    }
 
     private void OnDestroy()
     {
         if (_isKilled == false)
         {
-            Attack();
+            Destroyed?.Invoke(this);
         }
     }
 
     private void OnMouseDown()
     {
         CreateEffect();
-        _player.AddPoints(_points);
+        Clicked?.Invoke(this);
         _isKilled = true;
         Destroy(gameObject);
     }
 
-    private void ChangeSpeed(float speed)
+    public void ChangeSpeed(float speed)
     {
         _speed *= speed;
     }
 
     private void CreateEffect()
     {
-        GameObject effect = Instantiate(_particleObject, _transform.position, Quaternion.identity);
-        effect.GetComponent<ExplosionEffect>().SetColor(_color);
-    }
-
-    private void Attack()
-    {
-        _player.GetDamage(_damage);
+        ExplosionEffect effect = Instantiate(_particleObject, _transform.position, Quaternion.identity);
+        effect.SetColor(_color);
     }
 }
