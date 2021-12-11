@@ -1,57 +1,48 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class BubblesHolder : MonoBehaviour
 {
+    [Header("Speed settings")]
     [SerializeField] private float _valueOfSpeedIncrease;
-    [SerializeField] private float _spawnRate;
     [SerializeField] private float _changeSpeedRate;
-    [SerializeField] private Bubble _bubble;
-    [SerializeField] private float _minSpawnPointX;
-    [SerializeField] private float _maxSpawnPointX;
     [Header("Reference for Player")]
     [SerializeField] private Player _player;
+    [Header("Reference for Bubble Spawner")]
+    [SerializeField] private BubbleSpawner _bubbleSpawner;
 
     private float _speed;
-    private float _nextTimeToSpawn;
     private float _nextTimeToChangeSpeed;
-    private Transform _transform;
 
     private List<Bubble> _bubbles;
-    
+
     private void Awake()
     {
         _speed = 1;
-        _nextTimeToSpawn = 0;
-        _transform = transform;
+        _nextTimeToChangeSpeed = 1;
         _bubbles = new List<Bubble>();
+    }
+
+    private void OnEnable()
+    {
+        _bubbleSpawner.Spawned += AddBubble;
     }
 
     private void Update()
     {
-        if (CheckTimeForSpawn())
-        {
-            SpawnBubble(_bubble);
-        }
         if (CheckTimeForChangeSpeed())
         {
             ChangeSpeed();
         }
     }
 
-    private void ChangeSpeed()
+    private void OnDisable()
     {
-        _speed += _valueOfSpeedIncrease;
-        foreach (Bubble bubble in _bubbles)
-        {
-            bubble.ChangeSpeed(_speed);
-        }  
+        _bubbleSpawner.Spawned -= AddBubble;
     }
 
-    private void SpawnBubble(Bubble bubbleObject)
+    private void AddBubble(Bubble bubble)
     {
-        Bubble bubble = Instantiate(bubbleObject, new Vector3(_transform.position.x, _transform.position.y, Random.Range(_minSpawnPointX, _maxSpawnPointX)), Quaternion.identity);
         bubble.Clicked += BubbleClicked;
         bubble.Destroyed += BubbleDestroyed;
         _bubbles.Add(bubble);
@@ -68,17 +59,18 @@ public class BubblesHolder : MonoBehaviour
     private void BubbleClicked(Bubble bubble)
     {
         _player.AddPoints(bubble.Points);
+        _bubbles.Remove(bubble);
+        bubble.Clicked -= BubbleClicked;
+        bubble.Destroyed -= BubbleDestroyed;
     }
 
-    private bool CheckTimeForSpawn()
+    private void ChangeSpeed()
     {
-        if (Time.time > _nextTimeToSpawn)
+        _speed += _valueOfSpeedIncrease;
+        foreach (Bubble bubble in _bubbles)
         {
-            _nextTimeToSpawn = Time.time + 1f / _spawnRate;
-            return true;
+            bubble.ChangeSpeed(_speed);
         }
-
-        return false;
     }
 
     private bool CheckTimeForChangeSpeed()

@@ -80,7 +80,7 @@ public class Bubble : MonoBehaviour
 
     private void CreateEffect()
     {
-        ExplosionEffect effect = Instantiate(_particleObject, _transform.position, Quaternion.identity);
+        ExplosionEffect effect = Instantiate(_particleObject, _transform.position, Quaternion.Euler(new Vector3(90, 0, 0)));
         effect.SetColor(_color);
     }
 }
