@@ -115,7 +115,7 @@ MonoBehaviour:
   _maximumDamage: 5
   _minimumPoints: 1
   _maximumPoints: 10
-  _yDestination: 30
+  _yDestination: -20
   _particleObject: {fileID: 4192812189746778519, guid: c418bbc9b1b3b134c8d194b5ddd142a4, type: 3}
 --- !u!54 &1746501976357429051
 Rigidbody:
